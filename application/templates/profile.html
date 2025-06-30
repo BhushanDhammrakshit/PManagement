@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Profile</title>
+</head>
+<body>
+    <h2>User Profile</h2>
+    <ul>
+        <li><strong>Name:</strong> {{ user.name }}</li>
+        <li><strong>Email:</strong> {{ user.email }}</li>
+        <li><strong>Phone:</strong> {{ user.phone }}</li>
+        <li><strong>Gender:</strong> {{ user.Gender }}</li>
+        <li><strong>Location:</strong> {{ user.Location }}</li>
+    </ul>
+
+    <h2>Stock Holdings</h2>
+    <h2>Stock Holdings Chart</h2>
+    <canvas id="stockChart" width="400" height="400"></canvas>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+  const stockData = {{ stocks | tojson | safe }} || [];
+  
+  const labels = stockData.map(s => s.StockName);
+  const quantities = stockData.map(s => (Number( s.Quantity[0] ) * Number( s.PurchasePrice )).toFixed(2));
+    console.log("Stock Data:", stockData);
+  console.log("Labels:", labels);
+  console.log("Quantities:", quantities);
+
+  const ctx = document.getElementById('stockChart');
+
+  new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Stock Quantity',
+        data: quantities,
+        backgroundColor: [
+          'rgba(255, 99, 132, 0.5)',
+          'rgba(54, 162, 235, 0.5)',
+          'rgba(255, 206, 86, 0.5)',
+          'rgba(75, 192, 192, 0.5)',
+          'rgba(153, 102, 255, 0.5)',
+          'rgba(255, 159, 64, 0.5)'
+        ],
+        borderColor: [
+          'rgba(255, 99, 132, 1)',
+          'rgba(54, 162, 235, 1)',
+          'rgba(255, 206, 86, 1)',
+          'rgba(75, 192, 192, 1)',
+          'rgba(153, 102, 255, 1)',
+          'rgba(255, 159, 64, 1)'
+        ],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'top',
+        },
+        title: {
+          display: true,
+          text: 'Stock Holdings (Quantity per Stock)'
+        }
+      }
+    }
+  });
+</script>
+
+</body>
+</html>

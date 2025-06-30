@@ -3,12 +3,12 @@ from flask import render_template
 
 @app.route("/")
 def index():
-    return render_template('index.html', title = 'Home')
+    return render_template('index.html')
 
 @app.route("/layout")
 def layout():
-    return render_template('layout.html', title = 'layout')
+    return render_template('layout.html')
 
 @app.route("/charts")
 def charts():
-    return render_template('charts.html', title = 'Charts')
+    return render_template('charts.html')
