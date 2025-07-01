@@ -1,0 +1,41 @@
+
+.navbar-brand-logo{
+    padding: 5px 10px;
+    background-color: bisque;
+}
+
+.navbar-user-email{
+   font-size: 15px;
+   color: #6c757d;
+}
+
+.navbar-user-name{
+   font-size: 15px;
+   color: #343a40;
+}
+
+.navbar-nav{
+    height: 65px;
+    display: flex;
+    flex-direction: row;
+    margin-right: 25px;
+    align-items: center;
+    justify-content: flex-end;
+    background-color: #e4deaaf6;
+    padding: 2px 10px;
+}
+
+.navbar-user-details {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-left: 10px;
+    max-height: 50px;
+    padding: 5px 10px;
+    justify-content: center;
+}
+
+.navbar-text{
+    font-size: 10px;
+    color: #6c757d;
+}

@@ -1,46 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Custom CSS -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='CSS/style.css') }}"
+    />
+
+    <!-- Favicon -->
+    <link
+      rel="icon"
+      href="{{ url_for('static', filename='Images/favicon.ico') }}"
+      type="image/x-icon"
+    />
 
     <!-- Adding title according to page -->
     {% if title %}
     <title>PM - {{title}}</title>
     {% else %}
-    <title> PM </title>
+    <title>PM</title>
     {% endif %}
+  </head>
 
-</head>
-
-<body>
-
+  <body>
     <!-- Navigation bar -->
-    <nav class="navbar navbar-light bg-light">
+    <nav class="navbar navbar-light bg-light navbar-brand-logo">
+      <div class="navbar-brand-logo">
         <a class="navbar-brand" href="#">
-            <img src="/docs/4.0/assets/brand/bootstrap-solid.svg" width="30" height="30"
-                class="d-inline-block align-top" alt="PM logo">
-            PM
+          <img
+            src="/docs/4.0/assets/brand/bootstrap-solid.svg"
+            width="30"
+            height="30"
+            class="d-inline-block align-top"
+            alt="PM logo"
+          />
+          PM
         </a>
-        <div class="navbar-nav ml-auto">
-            <span class="navbar-text">
-                <strong>{{ user.name }}</strong>
-            </span>
-            <span class="navbar-text">
-                <small>{{ user.email }}</small>
-            </span>
-            <img src="{{ user.profile_photo }}" alt="Profile Photo" class="rounded-circle" width="30" height="30">
+      </div>
 
+      <div class="navbar-nav ml-auto">
+        <img
+          src="{{ profile_photo }}"
+          alt="Profile Photo"
+          class="rounded-circle"
+          width="35"
+          height="35"
+        />
+        <div class="navbar-user-details">
+          <span class="navbar-user-name"> {{ name }} </span>
+          <span class="navbar-user-email"> {{ email}} </span>
         </div>
+      </div>
     </nav>
 
-
     {% block content %}
-    <h1> This is layout page</h1>
+    <h1>This is navigation page</h1>
     {% endblock %}
-</body>
-
+  </body>
 </html>

@@ -7,7 +7,7 @@ def index():
 
 @app.route("/layout")
 def layout():
-    return render_template('layout.html')
+    return render_template('layout.html', name="User", email="test@gmail.com", title="Profile Management")
 
 @app.route("/charts")
 def charts():

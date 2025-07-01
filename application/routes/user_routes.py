@@ -34,8 +34,8 @@ def get_user_profile_and_stocks():
         "name": user_entity.get("UserName"),
         "email": user_entity.get("Email"),
         "phone": user_entity.get("ContactNo"),
-        "Gender": user_entity.get("Gender"),
-        "Location": user_entity.get("Location"),
+        "gender": user_entity.get("Gender"),
+        "location": user_entity.get("Location"),
         }
         
         return render_template("profile.html", user=user, stocks=stocks)
