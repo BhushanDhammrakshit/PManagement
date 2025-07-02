@@ -38,7 +38,12 @@ def get_user_profile_and_stocks():
         "location": user_entity.get("Location"),
         }
         
-        return render_template("profile.html", user=user, stocks=stocks)
+        return render_template("profile.html", 
+                                user=user, 
+                                stocks=stocks, 
+                                name=user_entity.get("UserName"),
+                                email=user_entity.get("Email"),
+                                title="Profile")
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500

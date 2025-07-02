@@ -1,10 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>User Profile</title>
-</head>
-<body>
+{% extends "layout.html" %}
+{% block content %}
     <h2>User Profile</h2>
     <ul>
         <li><strong>Name:</strong> {{ user.name }}</li>
@@ -74,5 +69,4 @@
   });
 </script>
 
-</body>
-</html>
+{% endblock %}

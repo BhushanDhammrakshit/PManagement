@@ -1,12 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <title>User Login</title>
-</head>
-
-<body>
+{% extends "layout.html" %}
+{% block content %}
     <h2>User Login</h2>
     <form method="POST" action="/user/profile">
         <input type="email" name="email" required />
@@ -14,10 +7,5 @@
         <button type="submit">Login</button>
     </form>
 
-
     <div id="result" style="margin-top:20px;"></div>
-
-
-</body>
-
-</html>
+{% endblock %}
