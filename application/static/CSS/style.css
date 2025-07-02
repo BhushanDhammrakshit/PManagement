@@ -94,7 +94,7 @@
 
   .sidebar ul li a {
       display: flex;
-      /* flex-direction: row; */
+      flex-direction: row;
       align-items: center;
       color: white;
       text-decoration: none;
