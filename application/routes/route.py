@@ -9,6 +9,22 @@ def index():
 def layout():
     return render_template('layout.html', name="User", email="test@gmail.com", title="Profile Management")
 
-@app.route("/charts")
-def charts():
-    return render_template('charts.html')
+@app.route("/home")
+def home():
+    return render_template('home.html')
+
+@app.route("/algoHelper")
+def algoHelper():
+    return render_template('algoHelper.html')
+
+@app.route("/portfolioMaker")
+def portfolioMaker():
+    return render_template('portfolioMaker.html')
+
+@app.route("/portfolioAnalysis")
+def portfolioAnalysis():
+    return render_template('portfolioAnalysis.html')
+
+@app.route("/tendors")
+def tendors():
+    return render_template('tendors.html')

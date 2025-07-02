@@ -13,6 +13,9 @@
     <!-- Favicon -->
     <link rel="icon" href="{{ url_for('static', filename='Images/favicon.ico') }}" type="image/x-icon" />
 
+    <!-- Font awesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
     <!-- Adding title according to page -->
     {% if title %}
     <title>PM - {{title}}</title>
@@ -42,22 +45,33 @@
     </nav>
 
     <!-- Left navigation window -->
-     <div class="container-fluid">
-         <div class="sidebar">
-             <h2>Menu</h2>
-             <ul>
-                 <li>Dashboard</li>
-                 <li>Profile</li>
-                 <li>Settings</li>
-                 <li>Logout</li>
-                </ul>
-            </div>
-            
-            <div class="content">
-                {% block content %}
-                
-                {% endblock %}
-            </div>
+    <div class="container-fluid">
+        <div class="sidebar">
+            <h2 class="sidebar-items">Menu</h2>
+            <ul>
+                <li><a href="/home"><i class="fas fa-home"></i>
+                        <div class="sidebar-items"> Home</div>
+                    </a></li>
+                <li><a href="/portfolioAnalysis"><i class="fa-solid fa-magnifying-glass-chart"></i>
+                        <div class="sidebar-items"> Portfolio analysis</div>
+                    </a></li>
+                <li><a href="/algoHelper"><i class="fa-solid fa-robot"></i>
+                        <div class="sidebar-items"> Algo helper</div>
+                    </a></li>
+                <li><a href="/tendors"><i class="fas fa-file"></i>
+                        <div class="sidebar-items"> Tendors</div>
+                    </a></li>
+                <li><a href="/portfolioMaker"><i class="fas fa-list-check"></i>
+                        <div class="sidebar-items"> Portfolio Maker</div>
+                    </a></li>
+            </ul>
+        </div>
+
+        <div class="content">
+            {% block content %}
+
+            {% endblock %}
+        </div>
     </div>
 
 </body>
