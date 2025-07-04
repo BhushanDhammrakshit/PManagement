@@ -1,6 +1,6 @@
 /* Upper navigation bar  */
 
-.navbar{
+.navbar {
   height: 65px;
 }
 
@@ -79,16 +79,18 @@ body {
 
 .sidebar ul li {
   padding: 10px 0;
-    display: flex;           /* Arrange items in a row */
-    align-items: center;     /* Vertically center icons and text */
-    gap: 10px;
-    flex-direction: row;
+  display: flex;
+  /* Arrange items in a row */
+  align-items: center;
+  /* Vertically center icons and text */
+  gap: 10px;
+  flex-direction: row;
 }
 
 .sidebar ul li:hover {
   background-color: #34495e;
   cursor: pointer;
-  
+
 }
 
 .sidebar ul li a {
@@ -107,16 +109,21 @@ body {
 }
 
 .sidebar-items {
-    display: flex;                /* Ensure icon and text stay side by side */
-    align-items: center;          /* Align vertically */
-    white-space: nowrap;          /* Prevent wrapping to new lines */
-    clip-path: inset(0 100% 0 0); /* Initially hidden from right side */
-    transition: clip-path 0.5s ease;
+  display: flex;
+  /* Ensure icon and text stay side by side */
+  align-items: center;
+  /* Align vertically */
+  white-space: nowrap;
+  /* Prevent wrapping to new lines */
+  clip-path: inset(0 100% 0 0);
+  /* Initially hidden from right side */
+  transition: clip-path 0.5s ease;
 }
 
 .sidebar:hover .sidebar-items {
-    clip-path: inset(0 0 0 0);    /* Reveal fully */
-    padding-left: 2px;
+  clip-path: inset(0 0 0 0);
+  /* Reveal fully */
+  padding-left: 2px;
 }
 
 
@@ -135,6 +142,10 @@ body {
 
 .content {
   padding: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
 }
 
 /* login content */
@@ -186,4 +197,58 @@ body {
   border-radius: 5px;
   cursor: pointer;
   align-items: center;
+}
+
+
+.signup-container {
+  background-color: #ccc;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  width: 400px;
+}
+
+.signup-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.form-group input,
+.form-group select {
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.form-actions button {
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.login-link {
+  font-size: 12px;
+}
+
+.login-link a {
+  text-decoration: none;
+  color: blue;
 }

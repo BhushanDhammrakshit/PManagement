@@ -3,32 +3,37 @@
     <div class="signup-container">
         <h2>Sign Up</h2>
         <form method="POST" action="/user/signup">
-            <label for="name">Name:</label>
-            <input type="text" name="name" required />
-
-            <label for="email">Email:</label>
-            <input type="email" name="email" required />
-
-            <label for="phone">Phone Number:</label>
-            <input type="tel" name="phone" pattern="[0-9]{10}" required />
-
-            <label for="gender">Gender:</label>
-            <select name="gender" required>
-                <option value="" disabled selected>Select gender</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-                <option value="Other">Other</option>
-            </select>
-
-            <label for="location">Location:</label>
-            <input type="text" name="location" required />
-
-            <button type="submit">Sign Up</button>
-
-            <p style="font-size: 12px; margin-top: 10px;">
-                Already have an account?
-                <a href="/login">Login here</a>
-            </p>
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" name="name" required />
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" name="email" required />
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone Number:</label>
+                <input type="tel" name="phone" pattern="[0-9]{10}" required />
+            </div>
+            <div class="form-group">
+                <label for="gender">Gender:</label>
+                <select name="gender" required>
+                    <option value="" disabled selected>Select gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="location">Location:</label>
+                <input type="text" name="location" required />
+            </div>
+            <div class="form-actions">
+                <button type="submit">Sign Up</button>
+                <div class="login-link">
+                    Already have an account? <a href="/login">Login here</a>
+                </div>
+            </div>
         </form>
     </div>
 </div>
@@ -36,16 +41,16 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-$(document).ready(function () {
-    if (window.location.pathname.includes("/signup")) {
-        $(".sidebar").hide();
-        $(".navbar-nav").hide();
-    }
-    else {
-        $(".sidebar").show();
-        $(".navbar-nav").show();
-    }
-});
+    $(document).ready(function () {
+        if (window.location.pathname.includes("/signup")) {
+            $(".sidebar").hide();
+            $(".navbar-nav").hide();
+        }
+        else {
+            $(".sidebar").show();
+            $(".navbar-nav").show();
+        }
+    });
 </script>
 
 
