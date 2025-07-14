@@ -1,47 +1,49 @@
-{% extends "layout.html" %} {% block content %}
-<div class="signup-content">
-    <div class="signup-container">
+{% extends "layout.html" %}
+{% block content %}
+<div class="login-content" style="overflow-y:auto; max-height:100vh; width:100vw;">
+    <div class="login-container">
         <h2>Sign Up</h2>
         <form method="POST" action="/signup">
-            <div class="form-group">
-                <label for="name">Name:</label>
-                <input type="text" name="name" required />
-            </div>
-            <div class="form-group">
-                <label for="email">Email:</label>
-                <input type="email" name="email" required />
-            </div>
-            <div class="form-group">
-                <label for="phone">Phone Number:</label>
-                <input type="tel" name="phone" pattern="[0-9]{10}" required />
-            </div>
-            <div class="form-group">
-                <label for="gender">Gender:</label>
-                <select name="gender" required>
-                    <option value="" disabled selected>Select gender</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Other">Other</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="location">Location:</label>
-                <input type="text" name="location" required />
-            </div>
-            <div class="form-group">
-                <label for="password">Password:</label>
-                <input type="password" name="password" required />
-            </div>
-            <div class="form-actions">
-                <button type="submit">Sign Up</button>
-                <div class="login-link">
-                    Already have an account? <a href="/login">Login here</a>
+            <div style="display: flex; gap: 1rem; width: 100%;">
+                <div style="flex:1;">
+                    <label for="name">Name:</label>
+                    <input type="text" name="name" required />
+                </div>
+                <div style="flex:1;">
+                    <label for="phone">Phone Number:</label>
+                    <input type="tel" name="phone" pattern="[0-9]{10}" required />
                 </div>
             </div>
+            <div style="display: flex; gap: 1rem; width: 100%;">
+                <div style="flex:1;">
+                    <label for="email">Email:</label>
+                    <input type="email" name="email" required />
+                </div>
+                <div style="flex:1;">
+                    <label for="password">Password:</label>
+                    <input type="password" name="password" required />
+                </div>
+            </div>
+            <div style="display: flex; gap: 1rem; width: 100%;">
+                <div style="flex:1;">
+                    <label for="gender">Gender:</label>
+                    <select name="gender" required>
+                        <option value="" disabled selected>Select gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div style="flex:1;">
+                    <label for="location">Location:</label>
+                    <input type="text" name="location" required />
+                </div>
+            </div>
+            <button type="submit">Sign Up</button>
+            <a href="/login">Already have an account? Login here</a>
         </form>
     </div>
 </div>
-
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
@@ -56,6 +58,4 @@
         }
     });
 </script>
-
-
 {% endblock %}

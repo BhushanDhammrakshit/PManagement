@@ -46,24 +46,24 @@
 
     <!-- Left navigation window -->
     <div class="container-fluid">
-        <div class="sidebar">
-            <h2 class="sidebar-items">Menu</h2>
+        <div class="sidebar" id="sidebar">
+            <div style="display: flex; align-items: center;">
+                <button class="sidebar-toggle" id="sidebarToggle" style="margin-right: 0; margin-left: 0; background: none; border: none;">
+                    <!-- Custom SVG Sidebar Icon (all white, no border) -->
+                    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="4.5" y="6" width="7.5" height="24" rx="2.25" fill="#fff"/>
+                        <rect x="15" y="9" width="13.5" height="3" rx="1.5" fill="#fff"/>
+                        <rect x="15" y="16.5" width="13.5" height="3" rx="1.5" fill="#fff"/>
+                        <rect x="15" y="24" width="13.5" height="3" rx="1.5" fill="#fff"/>
+                    </svg>
+                </button>
+            </div>
             <ul>
-                <li><a href="/home"><i class="fas fa-home"></i>
-                        <div class="sidebar-items"> Home</div>
-                    </a></li>
-                <li><a href="/portfolioAnalysis"><i class="fa-solid fa-magnifying-glass-chart"></i>
-                        <div class="sidebar-items"> Portfolio analysis</div>
-                    </a></li>
-                <li><a href="/algoHelper"><i class="fa-solid fa-robot"></i>
-                        <div class="sidebar-items"> Algo helper</div>
-                    </a></li>
-                <li><a href="/tendors"><i class="fas fa-file"></i>
-                        <div class="sidebar-items"> Tendors</div>
-                    </a></li>
-                <li><a href="/portfolioMaker"><i class="fas fa-list-check"></i>
-                        <div class="sidebar-items"> Portfolio Maker</div>
-                    </a></li>
+                <li><a href="/home"><i class="fas fa-home"></i><span class="sidebar-items"> Home</span></a></li>
+                <li><a href="/portfolioAnalysis"><i class="fa-solid fa-magnifying-glass-chart"></i><span class="sidebar-items"> Portfolio analysis</span></a></li>
+                <li><a href="/algoHelper"><i class="fa-solid fa-robot"></i><span class="sidebar-items"> Algo helper</span></a></li>
+                <li><a href="/tendors"><i class="fas fa-file"></i><span class="sidebar-items"> Tendors</span></a></li>
+                <li><a href="/portfolioMaker"><i class="fas fa-list-check"></i><span class="sidebar-items"> Portfolio Maker</span></a></li>
             </ul>
         </div>
 
@@ -73,6 +73,16 @@
             {% endblock %}
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var sidebar = document.getElementById('sidebar');
+            var toggle = document.getElementById('sidebarToggle');
+            toggle.addEventListener('click', function () {
+                sidebar.classList.toggle('closed');
+            });
+        });
+    </script>
 
 </body>
 
