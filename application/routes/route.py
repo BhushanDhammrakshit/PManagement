@@ -95,3 +95,8 @@ def tendors():
     name = session['name']
     email = session['email']
     return render_template('tendors.html', name=name, email=email, title="Tendors")
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect('/login')
