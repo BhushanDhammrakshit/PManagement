@@ -2,7 +2,7 @@ from application import app
 from flask import render_template, request, redirect, session
 from azure.data.tables import TableServiceClient, TableEntity
 import uuid
-from application.services.azure_table import user_table_client
+from application.services.azure_table import user_table_client, stocks_table_client
 
 app.secret_key = 'your_super_secret_key'  # Needed for session
 
@@ -100,3 +100,34 @@ def tenders():
 def logout():
     session.clear()
     return redirect('/login')
+
+@app.route("/portfolio/add", methods=["POST"])
+def add_to_portfolio():
+    if 'name' not in session or 'email' not in session:
+        return redirect('/login')
+    # Get form data
+    stock_name = request.form.get('stock_name')
+    quantity = request.form.get('quantity')
+    purchase_price = request.form.get('purchase_price')
+    purchase_date = request.form.get('purchase_date')
+    current_price = request.form.get('current_price')
+    sector = request.form.get('sector')
+    exchange = request.form.get('exchange')
+    row_key = str(uuid.uuid4())
+    entity = {
+        "PartitionKey": "PartitionKey",
+        "RowKey": row_key,
+        "StockName": stock_name,
+        "Quantity": int(quantity),
+        "PurchasePrice": float(purchase_price),
+        "PurchaseDate": purchase_date,
+        "CurrentPrice": float(current_price),
+        "Sector": sector,
+        "Exchange": exchange
+    }
+    try:
+        stocks_table_client.create_entity(entity=entity)
+    except Exception as e:
+        return f"Error saving to Azure Table Storage: {str(e)}", 500
+    # Show success popup on redirect
+    return redirect('/portfolioMaker?success=1')

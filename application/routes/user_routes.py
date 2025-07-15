@@ -5,7 +5,7 @@ from flask import render_template
 
 user_blueprint = Blueprint("user", __name__)
 
-#ahsdiofhowiehfnsdfnonfo
+
 @user_blueprint.route('/user/profile', methods=['POST'])
 def get_user_profile_and_stocks():
     """
