@@ -88,13 +88,13 @@ def portfolioAnalysis():
     email = session['email']
     return render_template('portfolioAnalysis.html', name=name, email=email, title="Portfolio Analysis")
 
-@app.route("/tendors")
-def tendors():
+@app.route("/tenders")
+def tenders():
     if 'name' not in session or 'email' not in session:
         return redirect('/login')
     name = session['name']
     email = session['email']
-    return render_template('tendors.html', name=name, email=email, title="Tendors")
+    return render_template('tenders.html', name=name, email=email, title="Tenders")
 
 @app.route('/logout')
 def logout():
