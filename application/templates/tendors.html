@@ -1,20 +1,31 @@
 {% extends "layout.html" %}
 {% block content %}
-<h2>Latest Tenders & Announcements</h2>
-<table class="table table-striped">
-    <thead>
+<h2 class="mb-4">Latest Stock News Summary</h2>
+
+<table class="table table-bordered table-hover">
+    <thead class="table-dark">
         <tr>
-            <th>Title</th>
-            <th>Organization</th>
-            <th>End Date</th>
+            <th>#</th>
+            <th>Stock</th>
+            <th>Summary</th>
+            <th>Sentiment</th>
         </tr>
     </thead>
     <tbody>
-        {% for t in tendors %}
+        {% for stock in stocks %}
         <tr>
-            <td>{{ t.title }}</td>
-            <td>{{ t.org }}</td>
-            <td>{{ t.end_date }}</td>
+            <td>{{ loop.index }}</td>
+            <td style="white-space: pre-wrap;">{{ stock.stock }}</td>
+            <td style="white-space: pre-wrap;">{{ stock.summary }}</td>
+            <td>
+                {% if stock.sentiment == "bullish" %}
+                    <span class="badge bg-success">Bullish</span>
+                {% elif stock.sentiment == "bearish" %}
+                    <span class="badge bg-danger">Bearish</span>
+                {% else %}
+                    <span class="badge bg-secondary">Neutral</span>
+                {% endif %}
+            </td>
         </tr>
         {% endfor %}
     </tbody>
