@@ -86,7 +86,14 @@ def portfolioAnalysis():
         return redirect('/login')
     name = session['name']
     email = session['email']
-    return render_template('portfolioAnalysis.html', name=name, email=email, title="Portfolio Analysis")
+    # Fetch user info to get user_id (RowKey)
+    user = list(user_table_client.query_entities(query_filter=f"Email eq '{email}'"))
+    if not user:
+        return render_template('portfolioAnalysis.html', name=name, email=email, title="Portfolio Analysis", stocks=[])
+    user_id = user[0].get('RowKey')
+    # Fetch stocks for this user
+    stocks = list(stocks_table_client.query_entities(query_filter=f"UserId eq '{user_id}'"))
+    return render_template('portfolioAnalysis.html', name=name, email=email, title="Portfolio Analysis", stocks=stocks)
 
 @app.route("/tenders")
 def tenders():

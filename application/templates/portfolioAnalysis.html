@@ -1,4 +1,64 @@
 {% extends "layout.html" %}
 {% block content %}
-<h2>This is Portfolio analysis</h2>
+<div class="portfolio-analysis-container">
+    <div class="portfolio-stock-list">
+        <div class="list-group-header">
+            List of Stocks which are in portfolio
+        </div>
+        <ul class="list-group" id="stockList">
+            {% for stock in stocks %}
+            <li class="list-group-item stock-list-item {% if loop.first %}active{% endif %}" data-index="{{ loop.index0 }}">
+                {{ stock.StockName }}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="portfolio-stock-info" id="stockInfo">
+        {% if stocks %}
+        <h4>{{ stocks[0].StockName }}</h4>
+        <ul>
+            <li><b>Quantity:</b> {{ stocks[0].Quantity }}</li>
+            <li><b>Purchase Price:</b> {{ stocks[0].PurchasePrice }}</li>
+            <li><b>Purchase Date:</b> {{ stocks[0].PurchaseDate }}</li>
+            <li><b>Current Price:</b> {{ stocks[0].CurrentPrice or 'N/A' }}</li>
+            <li><b>Sector:</b> {{ stocks[0].Sector or 'N/A' }}</li>
+            <li><b>Exchange:</b> {{ stocks[0].Exchange or 'N/A' }}</li>
+        </ul>
+        {% else %}
+        <div>No stocks in your portfolio.</div>
+        {% endif %}
+    </div>
+</div>
+<script type="text/javascript">
+    {% if stocks is defined %}
+    var stocks = {{ stocks|tojson|safe }};
+    var stockList = document.getElementById('stockList');
+    var stockInfo = document.getElementById('stockInfo');
+    if (stockList) {
+        stockList.addEventListener('click', function(e) {
+            var item = e.target.closest('.stock-list-item');
+            if (!item) return;
+            document.querySelectorAll('.stock-list-item').forEach(function(el) {
+                el.classList.remove('active');
+            });
+            item.classList.add('active');
+            var idx = parseInt(item.getAttribute('data-index'));
+            var stock = stocks[idx];
+            stockInfo.innerHTML = `
+                <h4>${stock.StockName}</h4>
+                <ul>
+                    <li><b>Quantity:</b> ${stock.Quantity}</li>
+                    <li><b>Purchase Price:</b> ${stock.PurchasePrice}</li>
+                    <li><b>Purchase Date:</b> ${stock.PurchaseDate}</li>
+                    <li><b>Current Price:</b> ${stock.CurrentPrice || 'N/A'}</li>
+                    <li><b>Sector:</b> ${stock.Sector || 'N/A'}</li>
+                    <li><b>Exchange:</b> ${stock.Exchange || 'N/A'}</li>
+                </ul>
+            `;
+        });
+    }
+    {% else %}
+    console.warn("⚠️ Warning: 'stocks' is not defined. JS interaction won't work.");
+    {% endif %}
+</script>
 {% endblock %}
