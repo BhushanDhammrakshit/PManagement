@@ -1,8 +1,9 @@
 {% extends "layout.html" %}
 {% block content %}
 <h2 class="mb-4">Latest Stock News Summary</h2>
+<div class="tenders-scroll-container">
 
-<table class="table table-bordered table-hover">
+<table class="table table-bordered table-hover tenders-table">
     <thead class="table-dark">
         <tr>
             <th>#</th>
@@ -30,4 +31,5 @@
         {% endfor %}
     </tbody>
 </table>
+</div>
 {% endblock %}
