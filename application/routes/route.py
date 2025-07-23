@@ -3,8 +3,10 @@ from flask import render_template, request, redirect, session
 from azure.data.tables import TableServiceClient, TableEntity
 import uuid
 from application.services.azure_table import user_table_client, stocks_table_client
+from application.routes.stock_analysis_api import stock_analysis_api
 
 app.secret_key = 'your_super_secret_key'  # Needed for session
+app.register_blueprint(stock_analysis_api)
 
 @app.route("/login", methods=['GET', 'POST'])
 def logIn():
@@ -93,6 +95,28 @@ def portfolioAnalysis():
     user_id = user[0].get('RowKey')
     # Fetch stocks for this user
     stocks = list(stocks_table_client.query_entities(query_filter=f"UserId eq '{user_id}'"))
+
+    # Clean up EntityProperty/Edm.Int64 fields for template rendering
+    def clean_value(val):
+        # Azure Table SDK v12+ returns EntityProperty for int fields, or dict for JSON
+        try:
+            # Handle Azure EntityProperty (repr: EntityProperty(value=300, edm_type=<EdmType.INT64: 'Edm.Int64'>))
+            if hasattr(val, 'value'):
+                return val.value
+            # Handle dict with '_' key (from JSON serialization)
+            if isinstance(val, dict) and '_' in val:
+                return val['_']
+        except Exception:
+            pass
+        return val
+
+    def clean_stock(stock):
+        for key in ['Quantity', 'PurchasePrice', 'CurrentPrice']:
+            if key in stock:
+                stock[key] = clean_value(stock[key])
+        return stock
+
+    stocks = [clean_stock(dict(s)) for s in stocks]
     return render_template('portfolioAnalysis.html', name=name, email=email, title="Portfolio Analysis", stocks=stocks)
 
 @app.route("/tenders")

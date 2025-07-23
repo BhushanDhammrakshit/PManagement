@@ -416,3 +416,40 @@ body {
 .portfolio-stock-info li:last-child {
   margin-bottom: 0;
 }
+
+.stock-analysis-card {
+  margin-top: 24px;
+}
+
+.stock-analysis-inner.card {
+  background: #f4f7fb;
+  border: 1px solid #e0e6ed;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(44, 167, 167, 0.08);
+}
+
+.stock-analysis-inner .card-title {
+  color: #3A5B97;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.stock-analysis-inner .card-text {
+  font-size: 1.05rem;
+  color: #2d3a4a;
+}
+
+.stock-analysis-inner .text-success {
+  color: #28a745 !important;
+  font-weight: 500;
+}
+
+.stock-analysis-inner .text-danger {
+  color: #dc3545 !important;
+  font-weight: 500;
+}
+
+.stock-analysis-inner .text-secondary {
+  color: #6c757d !important;
+  font-weight: 500;
+}

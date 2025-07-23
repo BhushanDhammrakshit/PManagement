@@ -17,13 +17,14 @@
         {% if stocks %}
         <h4>{{ stocks[0].StockName }}</h4>
         <ul>
-            <li><b>Quantity:</b> {{ stocks[0].Quantity }}</li>
-            <li><b>Purchase Price:</b> {{ stocks[0].PurchasePrice }}</li>
+            <li><b>Quantity:</b> {{ stocks[0].Quantity._ if stocks[0].Quantity is mapping and '_' in stocks[0].Quantity else stocks[0].Quantity }}</li>
+            <li><b>Purchase Price:</b> {{ stocks[0].PurchasePrice._ if stocks[0].PurchasePrice is mapping and '_' in stocks[0].PurchasePrice else stocks[0].PurchasePrice }}</li>
             <li><b>Purchase Date:</b> {{ stocks[0].PurchaseDate }}</li>
-            <li><b>Current Price:</b> {{ stocks[0].CurrentPrice or 'N/A' }}</li>
+            <li><b>Current Price:</b> {{ (stocks[0].CurrentPrice._ if stocks[0].CurrentPrice is mapping and '_' in stocks[0].CurrentPrice else stocks[0].CurrentPrice) or 'N/A' }}</li>
             <li><b>Sector:</b> {{ stocks[0].Sector or 'N/A' }}</li>
             <li><b>Exchange:</b> {{ stocks[0].Exchange or 'N/A' }}</li>
         </ul>
+        <div id="stockAnalysis" class="stock-analysis-card mt-3"></div>
         {% else %}
         <div>No stocks in your portfolio.</div>
         {% endif %}
@@ -31,9 +32,128 @@
 </div>
 <script type="text/javascript">
     {% if stocks is defined %}
-    var stocks = {{ stocks|tojson|safe }};
+    // --- Local Storage Caching for Stocks ---
+    const STOCKS_CACHE_KEY = 'portfolio_stocks_cache';
+    const STOCKS_CACHE_TIME_KEY = 'portfolio_stocks_cache_time';
+    const CACHE_DURATION_MS = 60 * 60 * 1000; // 1 hour
+
+    function saveStocksToCache(stocks) {
+        localStorage.setItem(STOCKS_CACHE_KEY, JSON.stringify(stocks));
+        localStorage.setItem(STOCKS_CACHE_TIME_KEY, Date.now().toString());
+    }
+    function getStocksFromCache() {
+        const cache = localStorage.getItem(STOCKS_CACHE_KEY);
+        const cacheTime = localStorage.getItem(STOCKS_CACHE_TIME_KEY);
+        if (cache && cacheTime) {
+            const age = Date.now() - parseInt(cacheTime);
+            if (age < CACHE_DURATION_MS) {
+                try {
+                    return JSON.parse(cache);
+                } catch (e) { return null; }
+            }
+        }
+        return null;
+    }
+    function clearStocksCache() {
+        localStorage.removeItem(STOCKS_CACHE_KEY);
+        localStorage.removeItem(STOCKS_CACHE_TIME_KEY);
+    }
+
+    // --- Local Storage Caching for Stock Analysis ---
+    const ANALYSIS_CACHE_KEY = 'portfolio_stock_analysis_cache';
+    const ANALYSIS_CACHE_TIME_KEY = 'portfolio_stock_analysis_cache_time';
+    const ANALYSIS_CACHE_DURATION_MS = 60 * 60 * 1000; // 1 hour
+
+    function saveAnalysisToCache(stockName, analysis) {
+        let cache = JSON.parse(localStorage.getItem(ANALYSIS_CACHE_KEY) || '{}');
+        let timeCache = JSON.parse(localStorage.getItem(ANALYSIS_CACHE_TIME_KEY) || '{}');
+        cache[stockName] = analysis;
+        timeCache[stockName] = Date.now();
+        localStorage.setItem(ANALYSIS_CACHE_KEY, JSON.stringify(cache));
+        localStorage.setItem(ANALYSIS_CACHE_TIME_KEY, JSON.stringify(timeCache));
+    }
+    function getAnalysisFromCache(stockName) {
+        let cache = JSON.parse(localStorage.getItem(ANALYSIS_CACHE_KEY) || '{}');
+        let timeCache = JSON.parse(localStorage.getItem(ANALYSIS_CACHE_TIME_KEY) || '{}');
+        if (cache[stockName] && timeCache[stockName]) {
+            let age = Date.now() - timeCache[stockName];
+            if (age < ANALYSIS_CACHE_DURATION_MS) {
+                return cache[stockName];
+            }
+        }
+        return null;
+    }
+    function clearAnalysisCache() {
+        localStorage.removeItem(ANALYSIS_CACHE_KEY);
+        localStorage.removeItem(ANALYSIS_CACHE_TIME_KEY);
+    }
+
+    // On page load, use cache if available, else use server data and cache it
+    var stocks = getStocksFromCache() || {{ stocks|tojson|safe }};
+    if (!getStocksFromCache()) {
+        saveStocksToCache(stocks);
+    }
+
+    function getValue(val) {
+        if (val && typeof val === 'object' && '_' in val) return val._;
+        return val;
+    }
     var stockList = document.getElementById('stockList');
     var stockInfo = document.getElementById('stockInfo');
+    var stockAnalysisDiv = document.getElementById('stockAnalysis');
+
+    async function fetchStockAnalysis(stock) {
+        const stockName = stock.StockName;
+        let cached = getAnalysisFromCache(stockName);
+        if (cached) {
+            renderStockAnalysis(cached);
+            return;
+        }
+        stockAnalysisDiv.innerHTML = '<div class="text-muted">Loading analysis...</div>';
+        try {
+            const response = await fetch('/api/stock_analysis', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ stock })
+            });
+            const data = await response.json();
+            if (data.analysis) {
+                saveAnalysisToCache(stockName, data.analysis);
+                renderStockAnalysis(data.analysis);
+            } else {
+                stockAnalysisDiv.innerHTML = '<div class="text-danger">Could not fetch analysis.</div>';
+            }
+        } catch (e) {
+            stockAnalysisDiv.innerHTML = '<div class="text-danger">Error fetching analysis.</div>';
+        }
+    }
+
+    function renderStockAnalysis(analysis) {
+        let formatted = '';
+        try {
+            let arr = JSON.parse(analysis);
+            if (Array.isArray(arr)) {
+                formatted = arr.map(item => `
+                    <div class="mb-2">
+                        <div><b>Stock:</b> ${item.stock}</div>
+                        <div><b>Sentiment:</b> <span class="text-${item.classification.toLowerCase() === 'bullish' ? 'success' : item.classification.toLowerCase() === 'bearish' ? 'danger' : 'secondary'}">${item.classification}</span></div>
+                        <div><b>Reason:</b> ${item.reason}</div>
+                    </div>
+                `).join('');
+            } else {
+                formatted = analysis;
+            }
+        } catch (e) {
+            formatted = analysis;
+        }
+        stockAnalysisDiv.innerHTML = `<div class="stock-analysis-inner card mt-3"><div class="card-body"><h5 class="card-title">AI Stock Analysis & Advice</h5><div class="card-text" style="white-space:pre-line;">${formatted}</div></div></div>`;
+    }
+
+    // On page load, show analysis for first stock if exists
+    if (stocks.length > 0) {
+        fetchStockAnalysis(stocks[0]);
+    }
+
     if (stockList) {
         stockList.addEventListener('click', function(e) {
             var item = e.target.closest('.stock-list-item');
@@ -47,16 +167,27 @@
             stockInfo.innerHTML = `
                 <h4>${stock.StockName}</h4>
                 <ul>
-                    <li><b>Quantity:</b> ${stock.Quantity}</li>
-                    <li><b>Purchase Price:</b> ${stock.PurchasePrice}</li>
+                    <li><b>Quantity:</b> ${getValue(stock.Quantity)}</li>
+                    <li><b>Purchase Price:</b> ${getValue(stock.PurchasePrice)}</li>
                     <li><b>Purchase Date:</b> ${stock.PurchaseDate}</li>
-                    <li><b>Current Price:</b> ${stock.CurrentPrice || 'N/A'}</li>
+                    <li><b>Current Price:</b> ${getValue(stock.CurrentPrice) || 'N/A'}</li>
                     <li><b>Sector:</b> ${stock.Sector || 'N/A'}</li>
                     <li><b>Exchange:</b> ${stock.Exchange || 'N/A'}</li>
                 </ul>
+                <div id="stockAnalysis" class="stock-analysis-card mt-3"></div>
             `;
+            // Re-select the new analysis div and fetch analysis for the selected stock
+            stockAnalysisDiv = document.getElementById('stockAnalysis');
+            fetchStockAnalysis(stock);
         });
     }
+
+    // Listen for a custom event to clear cache when a new stock is added
+    window.addEventListener('portfolioStockAdded', function() {
+        clearStocksCache();
+        clearAnalysisCache();
+        location.reload();
+    });
     {% else %}
     console.warn("⚠️ Warning: 'stocks' is not defined. JS interaction won't work.");
     {% endif %}
