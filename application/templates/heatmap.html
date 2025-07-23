@@ -1,0 +1,163 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="heatmap-main-container">
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <h2 class="mb-0 text-center flex-grow-1">Nifty 50 & Bank Nifty Sector Heatmap</h2>
+    <button id="refresh-heatmap-btn" class="btn btn-outline-primary ms-3" title="Refresh Heatmap" style="font-size:1.2rem;">
+      <i class="fa-solid fa-rotate-right"></i>
+    </button>
+  </div>
+  <div id="heatmap-treemap" class="scrollable-heatmap">
+    <div id="heatmap-loading" class="heatmap-loading-screen">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <div class="mt-2">Loading heatmap data...</div>
+    </div>
+  </div>
+</div>
+<script>
+const HEATMAP_CACHE_KEY = 'heatmap_data_cache';
+const HEATMAP_CACHE_TIME_KEY = 'heatmap_data_cache_time';
+const HEATMAP_CACHE_DURATION_MS = 15 * 60 * 1000; // 15 minutes
+
+function saveHeatmapToCache(data) {
+  localStorage.setItem(HEATMAP_CACHE_KEY, JSON.stringify(data));
+  localStorage.setItem(HEATMAP_CACHE_TIME_KEY, Date.now().toString());
+}
+function getHeatmapFromCache() {
+  const cache = localStorage.getItem(HEATMAP_CACHE_KEY);
+  const cacheTime = localStorage.getItem(HEATMAP_CACHE_TIME_KEY);
+  if (cache && cacheTime) {
+    const age = Date.now() - parseInt(cacheTime);
+    if (age < HEATMAP_CACHE_DURATION_MS) {
+      try {
+        return JSON.parse(cache);
+      } catch (e) { return null; }
+    }
+  }
+  return null;
+}
+function clearHeatmapCache() {
+  localStorage.removeItem(HEATMAP_CACHE_KEY);
+  localStorage.removeItem(HEATMAP_CACHE_TIME_KEY);
+}
+
+function getColor(change) {
+  if (change > 2) return '#2ecc40';
+  if (change > 0) return '#b6e6b6';
+  if (change < -2) return '#ff4136';
+  if (change < 0) return '#ffb3b3';
+  return '#f4f4f4';
+}
+function renderTreemap(containerId, stocks) {
+  // Hide loading
+  const loadingDiv = document.getElementById('heatmap-loading');
+  if (loadingDiv) loadingDiv.style.display = 'none';
+  // Find max abs change for scaling
+  let maxAbsChange = Math.max(...stocks.map(s => Math.abs(s.change)));
+  // Group by sector
+  const sectorMap = {};
+  stocks.forEach(stock => {
+    if (!sectorMap[stock.sector]) sectorMap[stock.sector] = [];
+    sectorMap[stock.sector].push(stock);
+  });
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  const sectorOrder = Object.keys(sectorMap).sort();
+  // Render sectors in pairs (two per row)
+  for (let i = 0; i < sectorOrder.length; i += 2) {
+    const rowDiv = document.createElement('div');
+    rowDiv.className = 'sector-row-pair mb-4';
+    [0, 1].forEach(offset => {
+      const sector = sectorOrder[i + offset];
+      if (!sector) return;
+      const sectorDiv = document.createElement('div');
+      sectorDiv.className = 'sector-group-block mb-0';
+      const label = document.createElement('div');
+      label.className = 'sector-label-block px-2 py-1 mb-2';
+      label.innerHTML = `<i class="fa-solid fa-layer-group me-2"></i>${sector} <span class="sector-arrow">&gt;</span>`;
+      sectorDiv.appendChild(label);
+      const grid = document.createElement('div');
+      grid.className = 'sector-grid-block two-row-heatmap';
+      // Sort by abs(change) descending for better visual
+      sectorMap[sector].sort((a, b) => Math.abs(b.change) - Math.abs(a.change));
+      // Calculate total abs(change) for this sector
+      const totalAbsChange = sectorMap[sector].reduce((sum, s) => sum + Math.abs(s.change), 0) || 1;
+      // Render each stock with width proportional to its abs(change)
+      sectorMap[sector].forEach((stock, i) => {
+        let percent = Math.abs(stock.change) / totalAbsChange;
+        let minWidth = 150; // px
+        let maxWidth = 300; // px
+        let width = Math.max(minWidth, Math.round(percent * grid.offsetWidth));
+        width = Math.min(width, maxWidth);
+        const div = document.createElement('div');
+        div.className = 'treemap-cell-block';
+        div.style.background = getColor(stock.change);
+        div.style.width = width + 'px';
+        div.style.height = '110px';
+        div.innerHTML = `
+          ${stock.logo ? `<img src="${stock.logo}" class="stock-logo-block mb-1" alt="${stock.symbol}">` : ''}
+          <div class="stock-symbol-block">${stock.symbol.replace('.NS','')}</div>
+          <div class="stock-change-block">${stock.change > 0 ? '+' : ''}${stock.change}%</div>
+        `;
+        // Custom tooltip
+        const tooltip = document.createElement('div');
+        tooltip.className = 'heatmap-tooltip heatmap-tooltip-right';
+        tooltip.innerHTML = `
+          <div class="tooltip-content">
+            <b class="tooltip-title">${stock.name}</b>
+            <div class="tooltip-row"><span class="tooltip-label">Price:</span> <span class="tooltip-value">₹${stock.price}</span></div>
+            <div class="tooltip-row"><span class="tooltip-label">Change:</span> <span class="tooltip-value ${stock.change > 0 ? 'pos' : stock.change < 0 ? 'neg' : ''}">${stock.change > 0 ? '+' : ''}${stock.change}%</span></div>
+          </div>
+        `;
+        div.appendChild(tooltip);
+        div.addEventListener('mouseenter', function(e) {
+          tooltip.style.display = 'block';
+        });
+        div.addEventListener('mouseleave', function(e) {
+          tooltip.style.display = 'none';
+        });
+        grid.appendChild(div);
+      });
+      sectorDiv.appendChild(grid);
+      rowDiv.appendChild(sectorDiv);
+    });
+    container.appendChild(rowDiv);
+  }
+}
+function loadHeatmap() {
+  document.getElementById('heatmap-loading').style.display = 'flex';
+  let cached = getHeatmapFromCache();
+  if (cached) {
+    renderTreemap('heatmap-treemap', [...cached.nifty, ...cached.banknifty]);
+    document.getElementById('heatmap-loading').style.display = 'none';
+    // Also refresh in background if cache is older than 5 min
+    const cacheTime = parseInt(localStorage.getItem(HEATMAP_CACHE_TIME_KEY));
+    if (Date.now() - cacheTime > 5 * 60 * 1000) {
+      fetchAndUpdateHeatmap();
+    }
+    return;
+  }
+  fetchAndUpdateHeatmap();
+}
+function fetchAndUpdateHeatmap() {
+  fetch('/heatmap-data').then(r => r.json()).then(data => {
+    saveHeatmapToCache(data);
+    renderTreemap('heatmap-treemap', [...data.nifty, ...data.banknifty]);
+    document.getElementById('heatmap-loading').style.display = 'none';
+  });
+}
+document.getElementById('refresh-heatmap-btn').addEventListener('click', function() {
+  clearHeatmapCache();
+  document.getElementById('heatmap-loading').style.display = 'flex';
+  document.getElementById('heatmap-treemap').innerHTML = '';
+  fetch('/heatmap-data?force_refresh=1').then(r => r.json()).then(data => {
+    saveHeatmapToCache(data);
+    renderTreemap('heatmap-treemap', [...data.nifty, ...data.banknifty]);
+    document.getElementById('heatmap-loading').style.display = 'none';
+  });
+});
+loadHeatmap();
+</script>
+{% endblock %}

@@ -4,9 +4,11 @@ from azure.data.tables import TableServiceClient, TableEntity
 import uuid
 from application.services.azure_table import user_table_client, stocks_table_client
 from application.routes.stock_analysis_api import stock_analysis_api
+from application.routes.heatmap import heatmap_bp
 
 app.secret_key = 'your_super_secret_key'  # Needed for session
 app.register_blueprint(stock_analysis_api)
+app.register_blueprint(heatmap_bp)
 
 @app.route("/login", methods=['GET', 'POST'])
 def logIn():
