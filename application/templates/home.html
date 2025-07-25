@@ -1,4 +1,84 @@
 {% extends "layout.html" %}
 {% block content %}
-<h2>This is Home page</h2>
+<div class="portfolio-visuals-container" style="background:#ffe4c4; padding:24px 12px 24px 12px; border-radius:8px; margin:24px 0; min-width:70vw; min-height:70vh; display:flex; align-items:center; justify-content:center;">
+  <div class="d-flex flex-row justify-content-around align-items-center flex-wrap w-100" style="gap:32px;">
+    <!-- Pie Chart -->
+    <div style="display:flex; flex-direction:column; align-items:center;">
+      <canvas id="portfolioPieChart" width="320" height="320" style="max-width:100%;max-height:320px;"></canvas>
+      <span style="margin-top:8px; font-weight:500;">Portfolio Allocation</span>
+    </div>
+    <!-- Line Chart -->
+    <div style="display:flex; flex-direction:column; align-items:center;">
+      <canvas id="portfolioLineChart" width="320" height="320" style="max-width:100%;max-height:320px;"></canvas>
+      <span style="margin-top:8px; font-weight:500;">Growth Since Purchase</span>
+    </div>
+    <!-- Sector Table -->
+    <div style="display:flex; flex-direction:column; align-items:center;">
+      <div class="sector-table-wrapper">
+        <h6 class="text-center mb-2">Sectorial Division</h6>
+        <table class="table table-sm table-bordered mb-0" id="sectorTable">
+          <thead><tr><th>Sector</th><th>Value</th><th>Gain</th><th>% Allocation</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+window.stocks = JSON.parse('{{ stocks|tojson|safe }}');
+const stocks = window.stocks;
+// Pie chart: allocation by stock
+const pieLabels = stocks.map(s => s.StockName);
+const pieValues = stocks.map(s => (s.Quantity || 0) * (s.CurrentPrice || 0));
+new Chart(document.getElementById('portfolioPieChart').getContext('2d'), {
+  type: 'pie',
+  data: {
+    labels: pieLabels,
+    datasets: [{
+      data: pieValues,
+      backgroundColor: pieLabels.map((_,i) => ['#ff540d','#ff7f32','#00b3ad','#ffb347','#b2dfdb','#a3a3ff','#ffd6e0'][i%7]),
+      borderWidth: 2,
+      borderColor: '#fff',
+    }]
+  },
+  options: { plugins: { legend: { display: false } }, responsive: false }
+});
+// Line chart: growth of each stock since purchase
+const lineLabels = stocks.map(s => s.StockName);
+const purchaseValues = stocks.map(s => (s.Quantity || 0) * (s.PurchasePrice || 0));
+const currentValues = stocks.map(s => (s.Quantity || 0) * (s.CurrentPrice || 0));
+new Chart(document.getElementById('portfolioLineChart').getContext('2d'), {
+  type: 'line',
+  data: {
+    labels: lineLabels,
+    datasets: [
+      { label: 'Purchase Value', data: purchaseValues, borderColor: '#ff540d', backgroundColor: 'rgba(255,84,13,0.1)', fill: false },
+      { label: 'Current Value', data: currentValues, borderColor: '#00b3ad', backgroundColor: 'rgba(0,179,173,0.1)', fill: false }
+    ]
+  },
+  options: { plugins: { legend: { display: true } }, responsive: false }
+});
+// Sectorial division table
+const sectorMap = {};
+stocks.forEach(s => {
+  const sector = s.Sector || 'Other';
+  const currentValue = (s.Quantity || 0) * (s.CurrentPrice || 0);
+  const purchaseValue = (s.Quantity || 0) * (s.PurchasePrice || 0);
+  if (!sectorMap[sector]) {
+    sectorMap[sector] = { current: 0, purchase: 0 };
+  }
+  sectorMap[sector].current += currentValue;
+  sectorMap[sector].purchase += purchaseValue;
+});
+const totalCurrent = Object.values(sectorMap).reduce((sum, s) => sum + s.current, 0) || 1;
+const tbody = document.querySelector('#sectorTable tbody');
+Object.entries(sectorMap).forEach(([sector, data]) => {
+  const gain = data.current - data.purchase;
+  const percent = (data.current / totalCurrent) * 100;
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td>${sector}</td><td>₹${data.current.toLocaleString(undefined,{maximumFractionDigits:2})}</td><td>₹${gain.toLocaleString(undefined,{maximumFractionDigits:2})}</td><td>${percent.toFixed(2)}%</td>`;
+  tbody.appendChild(tr);
+});
+</script>
 {% endblock %}

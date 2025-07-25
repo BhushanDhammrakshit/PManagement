@@ -743,3 +743,23 @@ body {
     max-width: 90vw;
   }
 }
+.portfolio-visuals-container .sector-table-wrapper {
+  width: 100%;
+  max-width: 320px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  padding: 12px;
+  overflow-x: auto;
+}
+#sectorTable {
+  width: 100%;
+  min-width: 260px;
+  table-layout: fixed;
+  word-break: break-word;
+}
+#sectorTable th, #sectorTable td {
+  font-size: 0.98rem;
+  padding: 6px 8px;
+  text-align: center;
+}

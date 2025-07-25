@@ -66,7 +66,31 @@ def home():
         return redirect('/login')
     name = session['name']
     email = session['email']
-    return render_template('home.html', name=name, email=email, title="Home")
+    # Fetch user info to get user_id (RowKey)
+    user = list(user_table_client.query_entities(query_filter=f"Email eq '{email}'"))
+    if not user:
+        return render_template('home.html', name=name, email=email, title="Home", stocks=[])
+    user_id = user[0].get('RowKey')
+    # Fetch stocks for this user
+    stocks = list(stocks_table_client.query_entities(query_filter=f"UserId eq '{user_id}'"))
+    # Clean up EntityProperty/Edm.Int64 fields for template rendering
+    def clean_value(val):
+        try:
+            if hasattr(val, 'value'):
+                return val.value
+            if isinstance(val, dict) and '_' in val:
+                return val['_']
+        except Exception:
+            pass
+        return val
+    def clean_stock(stock):
+        stock = dict(stock)
+        for key in ['Quantity', 'PurchasePrice', 'CurrentPrice']:
+            if key in stock:
+                stock[key] = clean_value(stock[key])
+        return stock
+    stocks = [clean_stock(s) for s in stocks]
+    return render_template('home.html', name=name, email=email, title="Home", stocks=stocks)
 
 @app.route("/algoHelper")
 def algoHelper():
